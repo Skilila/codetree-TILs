@@ -3,62 +3,42 @@
 using namespace std;
 
 int arr[100000];
-int merged_arr[100000];
 
-void merge(int arr[], int low, int mid, int high) {
-    int i = low, j = mid + 1; //각 리스트 내의 원소 시작 위치
-    int k = low; //병합시 원소를 담을 위치
+//max-heap을 유지하기 위한 함수
+void heapify(int arr[], int n, int i) {
+    int largest = i; //루트노드를 i로 가정
+    int left = i * 2; //왼쪽 자식 노드
+    int right = (i * 2) + 1; //오른쪽 자식 노드
 
-    //두 리스트 내의 원소가 남아있을때까지
-    while (i <= mid && j <= high) {
-        if (arr[i] <= arr[j]) { // 첫번째 리스트의 원소가 더 작을 시
-            merged_arr[k] = arr[i]; //해당 원소를 임시배열에 저장
-            k += 1;
-            i += 1;
-        }
-        else { 
-            merged_arr[k] = arr[j]; //두번째 리스트의 원소를 임시배열에 저장
-            k += 1;
-            j += 1;
-        }
-    }
+    //왼쪽 자식이 크다면 largest 갱신
+    if (left <= n && arr[left] > arr[largest]) largest = left;
 
-    //아직 첫번째 리스트의 원소가 남아있다면 원소를 임시배열에 저장
-    while (i <= mid) {
-        merged_arr[k] = arr[i];
-        k += 1;
-        i += 1;
-    }
+    //오른쪽 자식이 크다면 largest 갱신
+    if (right <= n && arr[right] > arr[largest]) largest = right;
 
-    //아직 두번째 리스트의 원소가 남아있다면 원소를 임시배열에 저장
-    while (j <= high) {
-        merged_arr[k] = arr[j];
-        k += 1;
-        j += 1;
-    }
-
-    //병합된 결과를 원본 리스트에 옮겨준다.
-    for (k = low; k <= high; k++) {
-        arr[k] = merged_arr[k];
+    //루트 노트가 largest가 아니면 교환,재귀호출
+    if (largest != i) { 
+        swap(arr[i], arr[largest]); //해당 자식노드와 현재 노드 교환
+        heapify(arr, n, largest); //내려간 위치에서 heapify진행
     }
 }
 
-void mergeSort(int arr[], int low, int high) {
-    if (low < high) {
-        int mid = (low + high) / 2;
-        
-        //분할
-        mergeSort(arr, low, mid);
-        mergeSort(arr, mid + 1, high);
-
-        //병합
-        merge(arr, low, mid, high);
+//힙 정렬
+void heapSort(int arr[], int n) {
+    //max-heap 구성
+    for (int i = n / 2; i >= 1; i--) { // n/2번째 원소부터 1번째 원소까지
+        heapify(arr, n, i); //heapify함수를 통해 max-heap을 구성
+    }
+    //정렬 진행
+    for (int i = n; i > 1; i--) {
+        swap(arr[1], arr[i]); // 최대값을 뒤로
+        heapify(arr, i - 1, 1); // 1번노드 기준 heapify를 진행해 줄어든 heap 재정렬
     }
 }
 
 //정렬된 원소를 출력
 void printArray(int arr[], int len) {
-    for (int i = 0; i < len; i++) {
+    for (int i = 1; i <= len; i++) {
         cout << arr[i] << " ";
     }
 }
@@ -69,11 +49,11 @@ int main() {
     cin >> n;
 
     //입력받은 원소를 저장
-    for (int i = 0; i < n; i++) {
+    for (int i = 1; i <= n; i++) {
         cin >> arr[i];
     }
 
-    mergeSort(arr, 0, n - 1);
+    heapSort(arr, n);
     printArray(arr, n);
 
     return 0;
