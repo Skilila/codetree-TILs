@@ -24,7 +24,7 @@ int main() {
             que.push(que.front());
             que.pop();
         }
-        i++;
+        j++;
     }
     return 0;
 }
