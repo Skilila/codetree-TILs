@@ -18,6 +18,7 @@ int main() {
         else {
             if(st.empty()) {
                 cout << "No" << endl;
+                return 0;
             }
             st.pop();
         }
